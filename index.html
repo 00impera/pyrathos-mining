@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PYRATHOS — Mining Command</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --cosmos-1: #04001a;
+  --cosmos-2: #080520;
+  --cosmos-3: #0d0830;
+  --nebula-purple: #7c3aed;
+  --nebula-violet: #a855f7;
+  --nebula-pink: #d946ef;
+  --star-blue: #38bdf8;
+  --star-cyan: #22d3ee;
+  --gold: #fbbf24;
+  --emerald: #10b981;
+  --red: #ef4444;
+  --text: #e2d9f3;
+  --text-dim: #7c6fa0;
+  --text-bright: #f5f0ff;
+  --border: rgba(124,58,237,0.25);
+  --border-bright: rgba(168,85,247,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--cosmos-1); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden; font-size: 16px; }
+
+/* ── COSMIC BG ── */
+.cosmos-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.nebula { position: absolute; border-radius: 50%; filter: blur(90px); }
+.nebula-1 { width: 700px; height: 700px; background: radial-gradient(circle,rgba(124,58,237,0.18),transparent 70%); top: -250px; left: -150px; animation: nd1 22s ease-in-out infinite alternate; }
+.nebula-2 { width: 600px; height: 600px; background: radial-gradient(circle,rgba(14,165,233,0.15),transparent 70%); bottom: -200px; right: -150px; animation: nd2 28s ease-in-out infinite alternate; }
+.nebula-3 { width: 500px; height: 500px; background: radial-gradient(circle,rgba(217,70,239,0.12),transparent 70%); top: 35%; left: 45%; transform: translate(-50%,-50%); animation: nd3 35s ease-in-out infinite alternate; }
+@keyframes nd1 { from{transform:translate(0,0) scale(1)} to{transform:translate(40px,25px) scale(1.12)} }
+@keyframes nd2 { from{transform:translate(0,0) scale(1)} to{transform:translate(-30px,-20px) scale(1.1)} }
+@keyframes nd3 { from{transform:translate(-50%,-50%) scale(1)} to{transform:translate(calc(-50% + 25px),calc(-50% + 18px)) scale(1.09)} }
+
+.stars {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 18%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 65%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(2px 2px at 42% 12%, rgba(196,181,253,1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 67% 78%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 88% 33%, rgba(180,220,255,0.9) 0%, transparent 100%),
+    radial-gradient(2px 2px at 14% 72%, rgba(196,181,253,1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 48% 44%, rgba(180,220,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 83% 14%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 28% 88%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(2px 2px at 58% 52%, rgba(196,181,253,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 74% 38%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(2.5px 2.5px at 36% 26%, rgba(196,181,253,1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 66%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 53% 83%, rgba(180,210,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 4% 48%, rgba(196,181,253,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 76% 92%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 19% 38%, rgba(196,181,253,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 62% 8%, rgba(255,255,255,0.7) 0%, transparent 100%);
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from{opacity:0.65} to{opacity:1} }
+
+/* ── VIBRATE ANIMATION ── */
+@keyframes vibrate {
+  0%  { transform: translate(0,0) rotate(0deg); }
+  15% { transform: translate(-2px,1px) rotate(-0.5deg); }
+  30% { transform: translate(2px,-1px) rotate(0.5deg); }
+  45% { transform: translate(-1px,2px) rotate(-0.3deg); }
+  60% { transform: translate(1px,-2px) rotate(0.3deg); }
+  75% { transform: translate(-2px,0px) rotate(-0.5deg); }
+  90% { transform: translate(2px,1px) rotate(0.5deg); }
+  100%{ transform: translate(0,0) rotate(0deg); }
+}
+
+.vibrate-btn:hover {
+  animation: vibrate 0.35s ease-in-out;
+}
+
+/* Also apply to all interactive buttons on hover */
+button:hover { animation: vibrate 0.35s ease-in-out; }
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(4,0,26,0.92);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(124,58,237,0.35);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 72px;
+  box-shadow: 0 4px 40px rgba(0,0,0,0.5);
+}
+
+.logo { display: flex; align-items: center; gap: 14px; }
+.logo-icon {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg,var(--nebula-purple),var(--nebula-pink));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 28px rgba(124,58,237,0.6);
+}
+.logo-text {
+  font-family: 'Orbitron', monospace; font-weight: 900; font-size: 22px; letter-spacing: 5px;
+  background: linear-gradient(90deg, #c084fc, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  text-shadow: none;
+}
+.logo-sub {
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  color: #9070c0; letter-spacing: 3px; margin-top: 2px;
+}
+
+.header-right { display: flex; align-items: center; gap: 16px; }
+
+.era-pill {
+  font-family: 'Share Tech Mono', monospace; font-size: 12px;
+  color: var(--gold);
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.35);
+  border-radius: 20px; padding: 7px 16px; letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(251,191,36,0.5);
+}
+
+.connect-btn {
+  font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: #fff;
+  background: linear-gradient(135deg, #6d28d9, #a855f7);
+  border: 1px solid rgba(168,85,247,0.5);
+  padding: 12px 28px; border-radius: 8px; cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative; overflow: hidden;
+}
+.connect-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.connect-btn:hover::after { opacity: 1; }
+.connect-btn:hover { box-shadow: 0 0 40px rgba(168,85,247,0.7), inset 0 1px 0 rgba(255,255,255,0.15); }
+.connect-btn.connected {
+  background: linear-gradient(135deg, #1e1040, #2d1b69);
+  border-color: var(--border-bright);
+}
+
+/* ── NAV ── */
+nav {
+  position: relative; z-index: 1;
+  display: flex; gap: 4px; padding: 22px 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: var(--text-dim);
+  background: none; border: none; border-bottom: 2px solid transparent;
+  padding: 11px 26px; cursor: pointer; transition: all 0.25s;
+  position: relative; bottom: -1px;
+}
+.tab:hover { color: #c084fc; animation: vibrate 0.35s ease-in-out; }
+.tab.active { color: #c084fc; border-bottom-color: #a855f7; }
+
+/* ── MAIN ── */
+main { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 32px; }
+
+/* ── STATS BAR ── */
+.stats-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+
+.stat-card {
+  background: linear-gradient(145deg, rgba(20,10,60,0.95), rgba(10,5,35,0.95));
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px 26px; position: relative; overflow: hidden;
+  transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--nebula-violet), transparent);
+}
+.stat-card.blue::before { background: linear-gradient(90deg, transparent, #38bdf8, transparent); }
+.stat-card.gold::before { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.stat-card.emerald::before { background: linear-gradient(90deg, transparent, var(--emerald), transparent); }
+.stat-card:hover { border-color: var(--border-bright); box-shadow: 0 8px 32px rgba(124,58,237,0.2); }
+
+.stat-corner { position: absolute; top: 14px; right: 18px; font-size: 20px; opacity: 0.2; }
+
+.stat-label {
+  font-family: 'Share Tech Mono', monospace; font-size: 11px;
+  color: #9070c0; letter-spacing: 2px; margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 700;
+  background: linear-gradient(90deg, #c084fc, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 6px; line-height: 1;
+}
+.stat-card.blue .stat-value { background: linear-gradient(90deg, #22d3ee, #38bdf8); -webkit-background-clip: text; background-clip: text; }
+.stat-card.gold .stat-value { background: linear-gradient(90deg, #fbbf24, #f59e0b); -webkit-background-clip: text; background-clip: text; }
+.stat-card.emerald .stat-value { background: linear-gradient(90deg, #10b981, #34d399); -webkit-background-clip: text; background-clip: text; }
+
+.stat-sub { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #7060a0; }
+
+/* ── HALVING BAR ── */
+.halving-bar {
+  background: linear-gradient(145deg, rgba(20,10,60,0.85), rgba(10,5,35,0.85));
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 28px; margin-bottom: 28px;
+  display: flex; align-items: center; gap: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.halving-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #9070c0; letter-spacing: 2px; white-space: nowrap; }
+.halving-track { flex: 1; height: 8px; background: rgba(124,58,237,0.1); border-radius: 4px; overflow: hidden; border: 1px solid rgba(124,58,237,0.2); }
+.halving-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #d946ef, #38bdf8); border-radius: 4px; transition: width 1.2s ease; box-shadow: 0 0 12px rgba(168,85,247,0.6); }
+.halving-info { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap; text-shadow: 0 0 10px rgba(251,191,36,0.4); }
+
+/* ── SECTIONS ── */
+.section { display: none; }
+.section.active { display: block; }
+
+.section-title {
+  font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700;
+  letter-spacing: 3px; color: #9070c0;
+  margin-bottom: 22px;
+  display: flex; align-items: center; gap: 14px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(124,58,237,0.4), transparent); }
+
+/* ── MINERS GRID ── */
+.miners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(295px, 1fr)); gap: 20px; }
+
+.miner-card {
+  background: linear-gradient(160deg, rgba(20,10,60,0.97), rgba(8,4,28,0.97));
+  border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden; transition: all 0.35s; position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.miner-card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(124,58,237,0.25);
+}
+.miner-card.staked { border-color: rgba(168,85,247,0.4); }
+
+.staked-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 10;
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  color: #c084fc; background: rgba(124,58,237,0.25);
+  border: 1px solid rgba(168,85,247,0.5);
+  border-radius: 5px; padding: 4px 10px; letter-spacing: 2px;
+  backdrop-filter: blur(6px);
+  text-shadow: 0 0 8px rgba(168,85,247,0.6);
+}
+
+.miner-art-wrap { width: 100%; aspect-ratio: 1; background: var(--cosmos-3); overflow: hidden; }
+.miner-art-wrap img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.miner-art-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.miner-art-placeholder-name { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 700; letter-spacing: 2px; }
+.miner-art-placeholder-id { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #7060a0; }
+
+.miner-info { padding: 20px; border-top: 1px solid var(--border); }
+
+.miner-name { font-family: 'Orbitron', monospace; font-size: 15px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.miner-id { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #7060a0; margin-bottom: 16px; letter-spacing: 1px; }
+
+.miner-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.miner-stat-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #7060a0; letter-spacing: 1px; margin-bottom: 3px; }
+.miner-stat-val { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; color: #e2d9f3; }
+
+.condition-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+.condition-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+.pending-display {
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace; font-size: 13px;
+  font-weight: 600;
+  color: #fcd34d;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.25);
+  border-radius: 8px; padding: 10px;
+  margin-bottom: 14px; min-height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  text-shadow: 0 0 12px rgba(251,191,36,0.4);
+  letter-spacing: 1px;
+}
+
+.miner-actions { display: flex; gap: 8px; }
+
+.btn {
+  flex: 1; font-family: 'Orbitron', monospace; font-size: 11px;
+  font-weight: 700; letter-spacing: 1px;
+  border: 1px solid; border-radius: 7px;
+  padding: 11px 4px; cursor: pointer; background: none;
+  transition: all 0.25s; position: relative;
+}
+.btn-stake {
+  color: #22d3ee; border-color: rgba(34,211,238,0.4);
+  text-shadow: 0 0 8px rgba(34,211,238,0.5);
+}
+.btn-stake:hover { background: rgba(34,211,238,0.12); border-color: rgba(34,211,238,0.7); box-shadow: 0 0 16px rgba(34,211,238,0.3); }
+.btn-unstake {
+  color: #c084fc; border-color: rgba(192,132,252,0.4);
+  text-shadow: 0 0 8px rgba(192,132,252,0.5);
+}
+.btn-unstake:hover { background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.7); box-shadow: 0 0 16px rgba(192,132,252,0.3); }
+.btn-claim {
+  color: #fcd34d; border-color: rgba(252,211,77,0.4);
+  text-shadow: 0 0 8px rgba(252,211,77,0.5);
+}
+.btn-claim:hover { background: rgba(252,211,77,0.12); border-color: rgba(252,211,77,0.7); box-shadow: 0 0 16px rgba(252,211,77,0.3); }
+
+/* ── MINT SECTION ── */
+.mint-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+
+.mint-card {
+  background: linear-gradient(160deg, rgba(20,10,60,0.97), rgba(8,4,28,0.98));
+  border: 1px solid var(--border); border-radius: 18px;
+  padding: 36px 26px; text-align: center; transition: all 0.4s;
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.mint-card::before { content: ''; position: absolute; inset: 0; border-radius: 18px; opacity: 0; transition: opacity 0.4s; }
+.mint-card[data-v="0"]::before { background: radial-gradient(ellipse at 50% 0%, rgba(56,189,248,0.12),transparent 70%); }
+.mint-card[data-v="1"]::before { background: radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.12),transparent 70%); }
+.mint-card[data-v="2"]::before { background: radial-gradient(ellipse at 50% 0%, rgba(217,70,239,0.12),transparent 70%); }
+.mint-card[data-v="3"]::before { background: radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.12),transparent 70%); }
+.mint-card:hover::before { opacity: 1; }
+.mint-card[data-v="0"]:hover { border-color: rgba(56,189,248,0.5); transform: translateY(-7px); box-shadow: 0 24px 60px rgba(56,189,248,0.12); }
+.mint-card[data-v="1"]:hover { border-color: rgba(168,85,247,0.5); transform: translateY(-7px); box-shadow: 0 24px 60px rgba(168,85,247,0.12); }
+.mint-card[data-v="2"]:hover { border-color: rgba(217,70,239,0.5); transform: translateY(-7px); box-shadow: 0 24px 60px rgba(217,70,239,0.12); }
+.mint-card[data-v="3"]:hover { border-color: rgba(251,191,36,0.5); transform: translateY(-7px); box-shadow: 0 24px 60px rgba(251,191,36,0.12); }
+
+.mint-orb {
+  width: 88px; height: 88px; border-radius: 50%;
+  margin: 0 auto 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+}
+.mint-card[data-v="0"] .mint-orb { background: radial-gradient(circle,rgba(56,189,248,0.28),rgba(56,189,248,0.04)); box-shadow: 0 0 36px rgba(56,189,248,0.35), 0 0 60px rgba(56,189,248,0.15); }
+.mint-card[data-v="1"] .mint-orb { background: radial-gradient(circle,rgba(168,85,247,0.28),rgba(168,85,247,0.04)); box-shadow: 0 0 36px rgba(168,85,247,0.35), 0 0 60px rgba(168,85,247,0.15); }
+.mint-card[data-v="2"] .mint-orb { background: radial-gradient(circle,rgba(217,70,239,0.28),rgba(217,70,239,0.04)); box-shadow: 0 0 36px rgba(217,70,239,0.35), 0 0 60px rgba(217,70,239,0.15); }
+.mint-card[data-v="3"] .mint-orb { background: radial-gradient(circle,rgba(251,191,36,0.28),rgba(251,191,36,0.04)); box-shadow: 0 0 36px rgba(251,191,36,0.35), 0 0 60px rgba(251,191,36,0.15); }
+
+.mint-name { font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 900; letter-spacing: 3px; margin-bottom: 8px; }
+.mint-card[data-v="0"] .mint-name { color: #38bdf8; text-shadow: 0 0 16px rgba(56,189,248,0.5); }
+.mint-card[data-v="1"] .mint-name { color: #c084fc; text-shadow: 0 0 16px rgba(192,132,252,0.5); }
+.mint-card[data-v="2"] .mint-name { color: #e879f9; text-shadow: 0 0 16px rgba(232,121,249,0.5); }
+.mint-card[data-v="3"] .mint-name { color: #fcd34d; text-shadow: 0 0 16px rgba(252,211,77,0.5); }
+
+.mint-hashrate { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: #9070c0; margin-bottom: 18px; }
+
+.mint-daily-box { background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); border-radius: 10px; padding: 12px; margin-bottom: 22px; }
+.mint-daily-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #7060a0; letter-spacing: 2px; margin-bottom: 5px; }
+.mint-daily-val { font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 700; color: #fcd34d; text-shadow: 0 0 10px rgba(252,211,77,0.4); }
+
+.mint-price-row { display: flex; align-items: baseline; justify-content: center; gap: 7px; margin-bottom: 26px; }
+.mint-price { font-family: 'Orbitron', monospace; font-size: 30px; font-weight: 900; }
+.mint-card[data-v="0"] .mint-price { color: #38bdf8; }
+.mint-card[data-v="1"] .mint-price { color: #c084fc; }
+.mint-card[data-v="2"] .mint-price { color: #e879f9; }
+.mint-card[data-v="3"] .mint-price { color: #fcd34d; }
+.mint-currency { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: #7060a0; }
+
+.mint-btn {
+  width: 100%; font-family: 'Orbitron', monospace; font-size: 12px;
+  font-weight: 700; letter-spacing: 2px; padding: 15px;
+  border: none; border-radius: 9px; cursor: pointer; transition: all 0.3s;
+}
+.mint-card[data-v="0"] .mint-btn { background: linear-gradient(135deg,#0369a1,#38bdf8); color: #fff; box-shadow: 0 4px 20px rgba(56,189,248,0.3); }
+.mint-card[data-v="1"] .mint-btn { background: linear-gradient(135deg,#6d28d9,#a855f7); color: #fff; box-shadow: 0 4px 20px rgba(168,85,247,0.3); }
+.mint-card[data-v="2"] .mint-btn { background: linear-gradient(135deg,#a21caf,#d946ef); color: #fff; box-shadow: 0 4px 20px rgba(217,70,239,0.3); }
+.mint-card[data-v="3"] .mint-btn { background: linear-gradient(135deg,#92400e,#fbbf24); color: #000; box-shadow: 0 4px 20px rgba(251,191,36,0.3); }
+.mint-btn:hover { filter: brightness(1.2); box-shadow: 0 8px 30px rgba(0,0,0,0.5) !important; }
+
+/* ── POOL SECTION ── */
+.pool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.pool-card {
+  background: linear-gradient(160deg, rgba(20,10,60,0.95), rgba(8,4,28,0.95));
+  border: 1px solid var(--border); border-radius: 16px; padding: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.pool-card-title {
+  font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700;
+  letter-spacing: 3px; color: #9070c0;
+  margin-bottom: 22px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bonus-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 16px; border-radius: 9px; margin-bottom: 5px; transition: all 0.25s;
+}
+.bonus-label { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: #9070c0; }
+.bonus-val { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 700; color: #a855f7; }
+.bonus-row.active { background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); }
+.bonus-row.active .bonus-label { color: #c084fc; font-weight: 600; }
+.bonus-row.active .bonus-val { color: #fcd34d; text-shadow: 0 0 10px rgba(252,211,77,0.4); }
+
+/* ── CONNECT PROMPT ── */
+.connect-prompt { text-align: center; padding: 100px 40px; }
+.connect-prompt-orb {
+  width: 130px; height: 130px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,58,237,0.4), rgba(124,58,237,0.05));
+  border: 1px solid rgba(168,85,247,0.4);
+  margin: 0 auto 36px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+  box-shadow: 0 0 60px rgba(124,58,237,0.3), 0 0 120px rgba(124,58,237,0.1);
+  animation: orbPulse 3s ease-in-out infinite;
+}
+@keyframes orbPulse {
+  0%,100% { box-shadow: 0 0 60px rgba(124,58,237,0.3), 0 0 120px rgba(124,58,237,0.1); }
+  50% { box-shadow: 0 0 90px rgba(124,58,237,0.5), 0 0 180px rgba(124,58,237,0.2); }
+}
+
+.connect-prompt h2 {
+  font-family: 'Orbitron', monospace; font-size: 34px; font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #c084fc, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 16px;
+}
+.connect-prompt p { font-family: 'Rajdhani', sans-serif; font-size: 18px; color: #9070c0; margin-bottom: 40px; line-height: 1.7; }
+
+/* ── WALLET NOTICE ── */
+.wallet-notice {
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 10px; padding: 16px 20px; margin-top: 20px;
+  font-family: 'Share Tech Mono', monospace; font-size: 13px;
+  color: #fca5a5; line-height: 1.6; text-align: left;
+  display: none;
+}
+.wallet-notice a { color: #f9a8d4; text-decoration: underline; }
+
+/* ── LOADING ── */
+.loading { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 80px; color: #7060a0; font-family: 'Share Tech Mono', monospace; font-size: 14px; }
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(124,58,237,0.2); border-top-color: #a855f7; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 80px 40px; }
+.empty-icon { font-size: 56px; margin-bottom: 18px; opacity: 0.3; }
+.empty-text { font-family: 'Rajdhani', sans-serif; font-size: 18px; color: #7060a0; line-height: 1.8; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 32px; right: 32px; z-index: 9999;
+  font-family: 'Share Tech Mono', monospace; font-size: 14px;
+  padding: 16px 22px;
+  background: rgba(15,8,45,0.97);
+  border: 1px solid #a855f7; border-radius: 10px;
+  color: #e2d9f3; backdrop-filter: blur(16px);
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 360px; min-width: 260px;
+  box-shadow: 0 8px 40px rgba(124,58,237,0.4);
+  line-height: 1.5;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.error { border-color: #ef4444; box-shadow: 0 8px 40px rgba(239,68,68,0.3); }
+#toast.success { border-color: #10b981; box-shadow: 0 8px 40px rgba(16,185,129,0.3); color: #6ee7b7; }
+
+/* ── WALLET MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: linear-gradient(145deg, rgba(20,10,60,0.99), rgba(8,4,28,0.99));
+  border: 1px solid var(--border-bright); border-radius: 20px;
+  padding: 40px; max-width: 420px; width: 90%;
+  box-shadow: 0 20px 80px rgba(124,58,237,0.4);
+}
+.modal h3 { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 900; letter-spacing: 3px; color: #c084fc; margin-bottom: 16px; text-align: center; }
+.modal p { font-family: 'Rajdhani', sans-serif; font-size: 16px; color: #9070c0; margin-bottom: 24px; text-align: center; line-height: 1.6; }
+.modal-links { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.modal-link {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.25);
+  border-radius: 10px; padding: 16px; text-decoration: none;
+  color: #e2d9f3; font-family: 'Rajdhani', sans-serif; font-size: 15px;
+  transition: all 0.2s; cursor: pointer;
+}
+.modal-link:hover { background: rgba(124,58,237,0.2); border-color: var(--border-bright); transform: translateX(4px); }
+.modal-link-icon { font-size: 24px; }
+.modal-link-text strong { display: block; font-weight: 700; color: #c084fc; }
+.modal-link-text span { font-size: 13px; color: #7060a0; }
+.modal-close { width: 100%; font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; color: #7060a0; background: none; border: 1px solid rgba(124,58,237,0.2); border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s; }
+.modal-close:hover { color: #c084fc; border-color: rgba(168,85,247,0.4); }
+</style>
+</head>
+<body>
+
+<div class="cosmos-bg">
+  <div class="stars"></div>
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+</div>
+
+<!-- WALLET INSTALL MODAL -->
+<div class="modal-overlay" id="walletModal">
+  <div class="modal">
+    <h3>⚡ CONNECT WALLET</h3>
+    <p>No Web3 wallet detected. Install one of these to connect to Monad Mainnet:</p>
+    <div class="modal-links">
+      <a class="modal-link" href="https://metamask.io/download/" target="_blank">
+        <span class="modal-link-icon">🦊</span>
+        <div class="modal-link-text">
+          <strong>MetaMask</strong>
+          <span>Most popular — Chrome, Firefox, Brave</span>
+        </div>
+      </a>
+      <a class="modal-link" href="https://www.coinbase.com/wallet/downloads" target="_blank">
+        <span class="modal-link-icon">🔵</span>
+        <div class="modal-link-text">
+          <strong>Coinbase Wallet</strong>
+          <span>Browser extension + mobile</span>
+        </div>
+      </a>
+      <a class="modal-link" href="https://rabby.io/" target="_blank">
+        <span class="modal-link-icon">🐇</span>
+        <div class="modal-link-text">
+          <strong>Rabby Wallet</strong>
+          <span>DeFi-focused, multi-chain</span>
+        </div>
+      </a>
+    </div>
+    <button class="modal-close" onclick="closeModal()">CLOSE</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⛏</div>
+    <div>
+      <div class="logo-text">PYRATHOS</div>
+      <div class="logo-sub">MINING COMMAND</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="era-pill" id="eraDisplay">ERA 0 — GENESIS</div>
+    <button class="connect-btn vibrate-btn" id="connectBtn" onclick="connectWallet()">CONNECT WALLET</button>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" onclick="switchTab('miners',this)">⬡ MY MINERS</button>
+  <button class="tab" onclick="switchTab('mint',this)">✦ MINT</button>
+  <button class="tab" onclick="switchTab('pool',this)">◎ POOL INFO</button>
+</nav>
+
+<main>
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-corner">◈</div>
+      <div class="stat-label">PYRATHOS BALANCE</div>
+      <div class="stat-value" id="pyrBalance">—</div>
+      <div class="stat-sub">TOTAL EARNED</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-corner">⬡</div>
+      <div class="stat-label">MINERS STAKED</div>
+      <div class="stat-value" id="stakedCount">—</div>
+      <div class="stat-sub">POOL BONUS: <span id="poolBonus" style="color:var(--gold)">—</span></div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-corner">⚡</div>
+      <div class="stat-label">TOTAL PENDING</div>
+      <div class="stat-value" id="totalPending">—</div>
+      <div class="stat-sub">PYRATHOS UNCLAIMED</div>
+    </div>
+    <div class="stat-card emerald">
+      <div class="stat-corner">∿</div>
+      <div class="stat-label">ACTIVE HASHRATE</div>
+      <div class="stat-value" id="totalHashrate">—</div>
+      <div class="stat-sub">GH/s TOTAL</div>
+    </div>
+  </div>
+
+  <div class="halving-bar">
+    <div class="halving-label">HALVING PROGRESS</div>
+    <div class="halving-track"><div class="halving-fill" id="halvingFill" style="width:0%"></div></div>
+    <div class="halving-info" id="halvingInfo">— blocks remaining</div>
+  </div>
+
+  <!-- MY MINERS -->
+  <div class="section active" id="section-miners">
+    <div class="section-title">ASTRA-CORE MINING RIGS</div>
+    <div id="minersContent">
+      <div class="connect-prompt">
+        <div class="connect-prompt-orb">⛏</div>
+        <h2>ENTER THE COSMOS</h2>
+        <p>Connect your wallet to command your ASTRA-CORE<br>mining rigs and harvest PYRATHOS across the nebula.</p>
+        <button class="connect-btn vibrate-btn" onclick="connectWallet()" style="font-size:13px;padding:15px 48px;border-radius:9px">CONNECT WALLET</button>
+        <div class="wallet-notice" id="walletNotice">
+          ⚠️ No wallet detected.<br>
+          You need a browser wallet extension to interact with Monad Mainnet.<br>
+          <a href="https://metamask.io/download/" target="_blank">→ Install MetaMask</a> &nbsp;|&nbsp;
+          <a href="https://rabby.io/" target="_blank">→ Install Rabby</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINT -->
+  <div class="section" id="section-mint">
+    <div class="section-title">DEPLOY ASTRA-CORE MINER</div>
+    <div class="mint-grid">
+      <div class="mint-card" data-v="0">
+        <div class="mint-orb">🌟</div>
+        <div class="mint-name">STELLAR-I</div>
+        <div class="mint-hashrate">~500 GH/s hashrate</div>
+        <div class="mint-daily-box"><div class="mint-daily-label">DAILY YIELD (ERA 0)</div><div class="mint-daily-val">~50 PYRATHOS</div></div>
+        <div class="mint-price-row"><div class="mint-price">100</div><div class="mint-currency">MON</div></div>
+        <button class="mint-btn" onclick="mintMiner(0)">DEPLOY MINER</button>
+      </div>
+      <div class="mint-card" data-v="1">
+        <div class="mint-orb">💫</div>
+        <div class="mint-name">STELLAR-II</div>
+        <div class="mint-hashrate">~2,000 GH/s hashrate</div>
+        <div class="mint-daily-box"><div class="mint-daily-label">DAILY YIELD (ERA 0)</div><div class="mint-daily-val">~190 PYRATHOS</div></div>
+        <div class="mint-price-row"><div class="mint-price">500</div><div class="mint-currency">MON</div></div>
+        <button class="mint-btn" onclick="mintMiner(1)">DEPLOY MINER</button>
+      </div>
+      <div class="mint-card" data-v="2">
+        <div class="mint-orb">🌌</div>
+        <div class="mint-name">NOVA-X</div>
+        <div class="mint-hashrate">~8,000 GH/s hashrate</div>
+        <div class="mint-daily-box"><div class="mint-daily-label">DAILY YIELD (ERA 0)</div><div class="mint-daily-val">~762 PYRATHOS</div></div>
+        <div class="mint-price-row"><div class="mint-price">1,000</div><div class="mint-currency">MON</div></div>
+        <button class="mint-btn" onclick="mintMiner(2)">DEPLOY MINER</button>
+      </div>
+      <div class="mint-card" data-v="3">
+        <div class="mint-orb">⚛️</div>
+        <div class="mint-name">QUANTUM-CORE</div>
+        <div class="mint-hashrate">~25,000 GH/s hashrate</div>
+        <div class="mint-daily-box"><div class="mint-daily-label">DAILY YIELD (ERA 0)</div><div class="mint-daily-val">~2,066 PYRATHOS</div></div>
+        <div class="mint-price-row"><div class="mint-price">10,000</div><div class="mint-currency">MON</div></div>
+        <button class="mint-btn" onclick="mintMiner(3)">DEPLOY MINER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POOL -->
+  <div class="section" id="section-pool">
+    <div class="section-title">NEBULA MINING POOL</div>
+    <div class="pool-grid">
+      <div class="pool-card">
+        <div class="pool-card-title">POOL BONUS TIERS</div>
+        <div class="bonus-row" id="bonus-0"><span class="bonus-label">1–2 miners</span><span class="bonus-val">1.00x</span></div>
+        <div class="bonus-row" id="bonus-1"><span class="bonus-label">3–4 miners</span><span class="bonus-val">1.10x</span></div>
+        <div class="bonus-row" id="bonus-2"><span class="bonus-label">5–9 miners</span><span class="bonus-val">1.25x</span></div>
+        <div class="bonus-row" id="bonus-3"><span class="bonus-label">10–24 miners</span><span class="bonus-val">1.50x</span></div>
+        <div class="bonus-row" id="bonus-4"><span class="bonus-label">25–49 miners</span><span class="bonus-val">1.75x</span></div>
+        <div class="bonus-row" id="bonus-5"><span class="bonus-label">50+ miners</span><span class="bonus-val">2.00x</span></div>
+      </div>
+      <div class="pool-card">
+        <div class="pool-card-title">HALVING ENGINE</div>
+        <div class="bonus-row"><span class="bonus-label">Current Era</span><span class="bonus-val" id="poolEra">—</span></div>
+        <div class="bonus-row"><span class="bonus-label">Halving Interval</span><span class="bonus-val">525,600 blocks</span></div>
+        <div class="bonus-row"><span class="bonus-label">Max Halvings</span><span class="bonus-val">32</span></div>
+        <div class="bonus-row"><span class="bonus-label">Max Supply</span><span class="bonus-val">21,000,000 PYR</span></div>
+        <div class="bonus-row"><span class="bonus-label">Blocks to Halving</span><span class="bonus-val" id="poolBlocks">—</span></div>
+        <div class="bonus-row"><span class="bonus-label">Global Mined</span><span class="bonus-val" id="globalMined">—</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+const CONTRACTS = {
+  pyrathos: '0x76444dEEf12a2fC0e2C7FeFf77829fa802380E48',
+  halving:  '0x101a36482668984e23720c552b0b78d309c57BF3',
+  miner:    '0x0A4242458782e49bfaAa8f785331c58e2568608a',
+  pool:     '0xFB4c669890d4664c026531F98eEb1365fadf38f1',
+};
+const RPC = 'https://monad-mainnet.g.alchemy.com/v2/Uwb7T0DbXMQHjiJBNf9_b005qYjLmJqk';
+const CHAIN_ID = '0x8f';
+const VNAMES  = ['STELLAR-I','STELLAR-II','NOVA-X','QUANTUM-CORE'];
+const VCOLORS = ['#38bdf8','#c084fc','#e879f9','#fcd34d'];
+
+let account = null, pendingTimers = {}, pendingState = {};
+
+function hasWallet() { return !!(window.ethereum || window.web3); }
+
+async function rpc(to, data) {
+  const r = await fetch(RPC, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to,data},'latest']})});
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message);
+  return j.result;
+}
+const eA = a => a.replace('0x','').toLowerCase().padStart(64,'0');
+const eU = n => BigInt(n).toString(16).padStart(64,'0');
+const dU = (h,o=2) => BigInt('0x'+h.slice(o,o+64));
+const fP = (wei,d=3) => (Number(BigInt(wei)/BigInt('1'+('0'.repeat(15))))/1000).toFixed(d);
+
+function dStr(hex) {
+  const d=hex.slice(2), off=Number(dU(hex))*2;
+  const len=Number(BigInt('0x'+d.slice(off,off+64)));
+  const s=d.slice(off+64,off+64+len*2);
+  let r=''; for(let i=0;i<s.length;i+=2) r+=String.fromCharCode(parseInt(s.slice(i,i+2),16));
+  return r;
+}
+function dArr(hex) {
+  if (!hex||hex==='0x') return [];
+  const d=hex.slice(2), off=Number(dU(hex))*2;
+  const len=Number(BigInt('0x'+d.slice(off,off+64)));
+  const res=[];
+  for(let i=0;i<len;i++) res.push(Number(BigInt('0x'+d.slice(off+64+i*64,off+64+i*64+64))));
+  return res;
+}
+
+function openModal() { document.getElementById('walletModal').classList.add('open'); }
+function closeModal() { document.getElementById('walletModal').classList.remove('open'); }
+
+async function connectWallet() {
+  if (!hasWallet()) {
+    openModal();
+    document.getElementById('walletNotice').style.display = 'block';
+    return;
+  }
+  try {
+    const provider = window.ethereum;
+    const accs = await provider.request({method:'eth_requestAccounts'});
+    account = accs[0];
+    // Switch chain
+    try {
+      await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_ID}]});
+    } catch(e) {
+      if (e.code===4902||e.code===-32603) {
+        await provider.request({method:'wallet_addEthereumChain',params:[{
+          chainId:CHAIN_ID, chainName:'Monad Mainnet',
+          nativeCurrency:{name:'MON',symbol:'MON',decimals:18},
+          rpcUrls:['https://monad-mainnet.g.alchemy.com/v2/Uwb7T0DbXMQHjiJBNf9_b005qYjLmJqk'],
+          blockExplorerUrls:['https://explorer.monad.xyz']
+        }]});
+      }
+    }
+    const btn = document.getElementById('connectBtn');
+    btn.textContent = account.slice(0,6)+'...'+account.slice(-4);
+    btn.classList.add('connected');
+    toast('✓ Wallet connected — scanning rigs...', false, 'success');
+    loadAll();
+    setInterval(() => { if(account){loadStats();loadHalving();} }, 60000);
+    provider.on('accountsChanged', () => location.reload());
+    provider.on('chainChanged', () => location.reload());
+  } catch(e) {
+    if (e.code===4001) toast('Connection rejected by user', true);
+    else toast(e.message, true);
+  }
+}
+
+async function loadAll() { await Promise.all([loadStats(), loadHalving(), loadMiners()]); }
+
+async function loadStats() {
+  if (!account) return;
+  try {
+    const [pyrR,stakeR,bonusR,pendR] = await Promise.all([
+      rpc(CONTRACTS.pyrathos,'0x70a08231'+eA(account)),
+      rpc(CONTRACTS.pool,'0x880d337c'+eA(account)),
+      rpc(CONTRACTS.pool,'0x3e672f2f'+eA(account)),
+      rpc(CONTRACTS.pool,'0x503a8c2c'+eA(account)),
+    ]);
+    document.getElementById('pyrBalance').textContent   = fP(dU(pyrR))+' PYR';
+    const sc = Number(dU(stakeR));
+    document.getElementById('stakedCount').textContent  = sc;
+    document.getElementById('poolBonus').textContent    = (Number(dU(bonusR))/100).toFixed(2)+'x';
+    document.getElementById('totalPending').textContent = fP(dU(pendR));
+    highlightTier(sc);
+  } catch(e) { console.warn('stats:',e); }
+}
+
+function highlightTier(n) {
+  [[1,2],[3,4],[5,9],[10,24],[25,49],[50,1e9]].forEach((t,i)=>{
+    document.getElementById('bonus-'+i)?.classList.toggle('active',n>=t[0]&&n<=t[1]);
+  });
+}
+
+async function loadHalving() {
+  try {
+    const [eraR,blocksR] = await Promise.all([
+      rpc(CONTRACTS.halving,'0xf8004d31'),
+      rpc(CONTRACTS.halving,'0xf74ad022'),
+    ]);
+    const era=Number(dU(eraR)), blocks=Number(dU(blocksR));
+    document.getElementById('eraDisplay').textContent  = `ERA ${era} — ${era===0?'GENESIS':'HALVED ×'+era}`;
+    document.getElementById('halvingInfo').textContent = blocks.toLocaleString()+' blocks remaining';
+    document.getElementById('halvingFill').style.width = Math.max(0,Math.min(100,100-blocks/525600*100))+'%';
+    document.getElementById('poolEra').textContent     = era;
+    document.getElementById('poolBlocks').textContent  = blocks.toLocaleString();
+  } catch(e) {}
+}
+
+async function loadPool() {
+  try { const g=await rpc(CONTRACTS.pool,'0x75794a3c'); document.getElementById('globalMined').textContent=fP(dU(g))+' PYR'; } catch(e) {}
+}
+
+async function loadMiners() {
+  if (!account) return;
+  const cont = document.getElementById('minersContent');
+  cont.innerHTML = '<div class="loading"><div class="spinner"></div>Scanning the cosmos for your rigs...</div>';
+  try {
+    const totalR = await rpc(CONTRACTS.miner,'0x18160ddd');
+    const total  = Number(dU(totalR));
+    const stakedR = await rpc(CONTRACTS.pool,'0x3cc8f306'+eA(account));
+    const stakedIds = dArr(stakedR);
+    const stakedSet = new Set(stakedIds);
+    const ownedIds = [];
+    for (let i=1;i<=total;i++) {
+      try {
+        const owR = await rpc(CONTRACTS.miner,'0x6352211e'+eU(i));
+        if (('0x'+owR.slice(-40)).toLowerCase()===account.toLowerCase()) ownedIds.push(i);
+      } catch(e){}
+    }
+    const allIds = [...new Set([...ownedIds,...stakedIds])].sort((a,b)=>a-b);
+    if (!allIds.length) {
+      cont.innerHTML=`<div class="empty-state"><div class="empty-icon">🌌</div><div class="empty-text">No mining rigs found in your sector.<br>Head to <strong style="color:#c084fc">✦ MINT</strong> to deploy your first ASTRA-CORE rig.</div></div>`;
+      return;
+    }
+    const grid = document.createElement('div');
+    grid.className = 'miners-grid';
+    let totalHR = 0;
+    for (const id of allIds) {
+      const isStaked = stakedSet.has(id);
+      grid.appendChild(await buildCard(id,isStaked));
+      if (isStaked) {
+        try { const hr=await rpc(CONTRACTS.miner,'0x48bee4ce'+eU(id)); totalHR+=Number(dU(hr)); } catch(e){}
+        startCounter(id);
+      }
+    }
+    cont.innerHTML=''; cont.appendChild(grid);
+    document.getElementById('totalHashrate').textContent = totalHR.toLocaleString();
+  } catch(e) {
+    cont.innerHTML=`<div class="empty-state"><div class="empty-text" style="color:#ef4444">Error loading miners:<br>${e.message}</div></div>`;
+  }
+}
+
+async function buildCard(id, isStaked) {
+  const card = document.createElement('div');
+  card.className='miner-card'+(isStaked?' staked':'');
+  card.id='miner-card-'+id;
+  let vari=0,hashrate=0,level=1,cond=100,effHR=0;
+  try {
+    const md=await rpc(CONTRACTS.miner,'0x3826ac44'+eU(id));
+    vari=Number(BigInt('0x'+md.slice(2,66)));
+    hashrate=Number(BigInt('0x'+md.slice(66,130)));
+    level=Number(BigInt('0x'+md.slice(194,258)));
+    cond=Number(BigInt('0x'+md.slice(258,322)));
+  } catch(e){}
+  try { const hr=await rpc(CONTRACTS.miner,'0x48bee4ce'+eU(id)); effHR=Number(dU(hr)); } catch(e){}
+  const color=VCOLORS[vari], name=VNAMES[vari];
+  const condColor=cond>66?'#10b981':cond>33?'#fbbf24':'#ef4444';
+  let artHtml=`<div class="miner-art-placeholder"><div class="miner-art-placeholder-name" style="color:${color}">${name}</div><div class="miner-art-placeholder-id">TOKEN #${id}</div></div>`;
+  try {
+    const uriR=await rpc(CONTRACTS.miner,'0xc87b56dd'+eU(id));
+    const uri=dStr(uriR);
+    if (uri.startsWith('data:application/json;base64,')) {
+      const json=JSON.parse(atob(uri.split(',')[1]));
+      if (json.image) artHtml=`<img src="${json.image}" alt="${name} #${id}" loading="lazy">`;
+    }
+  } catch(e){}
+  card.innerHTML=`
+    ${isStaked?'<div class="staked-badge">⚡ STAKED</div>':''}
+    <div class="miner-art-wrap">${artHtml}</div>
+    <div class="miner-info">
+      <div class="miner-name" style="color:${color}">${name}</div>
+      <div class="miner-id">TOKEN #${id} &nbsp;·&nbsp; LEVEL ${level}</div>
+      <div class="miner-stats">
+        <div><div class="miner-stat-label">HASHRATE</div><div class="miner-stat-val">${effHR.toLocaleString()} GH/s</div></div>
+        <div><div class="miner-stat-label">BASE HASH</div><div class="miner-stat-val">${hashrate.toLocaleString()}</div></div>
+        <div><div class="miner-stat-label">CONDITION</div><div class="miner-stat-val" style="color:${condColor}">${cond}%</div></div>
+        <div><div class="miner-stat-label">STATUS</div><div class="miner-stat-val" style="color:${isStaked?'#c084fc':'#7060a0'}">${isStaked?'MINING':'IDLE'}</div></div>
+      </div>
+      <div class="condition-bar"><div class="condition-fill" style="width:${cond}%;background:linear-gradient(90deg,${condColor},${condColor}55)"></div></div>
+      <div class="pending-display" id="pending-${id}">${isStaked?'⟳ Loading pending rewards...':'— Stake this rig to earn PYRATHOS —'}</div>
+      <div class="miner-actions">
+        ${isStaked
+          ?`<button class="btn btn-claim" onclick="claimReward(${id})">⚡ CLAIM</button><button class="btn btn-unstake" onclick="unstakeMiner(${id})">↩ UNSTAKE</button>`
+          :`<button class="btn btn-stake" onclick="stakeMiner(${id})">▶ STAKE</button>`}
+      </div>
+    </div>`;
+  return card;
+}
+
+function startCounter(id) {
+  if (pendingTimers[id]) { clearInterval(pendingTimers[id].t); clearInterval(pendingTimers[id].r); }
+  let lastVal=0n, lastTime=Date.now(), rateMs=0n;
+  const fetch=async()=>{
+    try {
+      const r=await rpc(CONTRACTS.pool,'0x6ecd2306'+eU(id));
+      const nv=dU(r), now=Date.now();
+      if (lastVal>0n) { const dt=BigInt(now-lastTime); if(dt>0n) rateMs=(nv-lastVal)/dt; }
+      lastVal=nv; lastTime=now; pendingState[id]=nv; updateTotal();
+    } catch(e){}
+  };
+  fetch();
+  const t=setInterval(()=>{
+    const el=document.getElementById('pending-'+id);
+    if (!el) return;
+    const est=lastVal+rateMs*BigInt(Date.now()-lastTime);
+    el.textContent='⚡ '+fP(est>0n?est:0n,6)+' PYRATHOS';
+  },100);
+  const r=setInterval(fetch,30000);
+  pendingTimers[id]={t,r};
+}
+
+function updateTotal() {
+  let total=0n; for(const v of Object.values(pendingState)) total+=v;
+  document.getElementById('totalPending').textContent=fP(total);
+}
+
+async function stakeMiner(id) {
+  if (!account) { toast('Connect your wallet first',true); return; }
+  try {
+    toast('Step 1/2 — Approving transfer...');
+    await sendTx(CONTRACTS.miner,'0x095ea7b3'+eA(CONTRACTS.pool)+eU(id),'0x0');
+    toast('Step 2/2 — Staking miner #'+id+'...');
+    await sendTx(CONTRACTS.pool,'0x2e8ae3c5'+eU(id),'0x0');
+    toast('Miner #'+id+' is now mining PYRATHOS! ⚡',false,'success');
+    setTimeout(loadAll,2500);
+  } catch(e) { toast(e.message,true); }
+}
+
+async function unstakeMiner(id) {
+  if (!account) { toast('Connect your wallet first',true); return; }
+  try {
+    toast('Unstaking miner #'+id+' (claims pending rewards)...');
+    await sendTx(CONTRACTS.pool,'0xefa043d0'+eU(id),'0x0');
+    toast('Miner #'+id+' returned to your wallet ✓',false,'success');
+    if(pendingTimers[id]){clearInterval(pendingTimers[id].t);clearInterval(pendingTimers[id].r);}
+    delete pendingState[id]; setTimeout(loadAll,2500);
+  } catch(e){ toast(e.message,true); }
+}
+
+async function claimReward(id) {
+  if (!account) { toast('Connect your wallet first',true); return; }
+  try {
+    toast('Claiming PYRATHOS from miner #'+id+'...');
+    await sendTx(CONTRACTS.pool,'0x379607f5'+eU(id),'0x0');
+    toast('PYRATHOS claimed and sent to wallet! ✓',false,'success');
+    setTimeout(loadStats,2000);
+  } catch(e){ toast(e.message,true); }
+}
+
+async function mintMiner(variant) {
+  if (!account) { toast('Connect your wallet first',true); return; }
+  const prices=[100n,500n,1000n,10000n].map(p=>p*10n**18n);
+  try {
+    toast('Deploying '+VNAMES[variant]+'... confirm in wallet');
+    await sendTx(CONTRACTS.miner,'0x6a627842'+eU(variant),'0x'+prices[variant].toString(16));
+    toast(VNAMES[variant]+' successfully deployed! 🚀',false,'success');
+    setTimeout(()=>{document.querySelectorAll('.tab')[0].click();loadAll();},2500);
+  } catch(e){ toast(e.message,true); }
+}
+
+async function sendTx(to,data,value) {
+  return new Promise((res,rej)=>{
+    window.ethereum.request({method:'eth_sendTransaction',params:[{from:account,to,data,value}]})
+      .then(hash=>{
+        const poll=setInterval(async()=>{
+          const r=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_getTransactionReceipt',params:[hash]})});
+          const j=await r.json();
+          if(j.result){clearInterval(poll);j.result.status==='0x1'?res(j.result):rej(new Error('Transaction reverted'));}
+        },1200);
+      }).catch(rej);
+  });
+}
+
+function switchTab(name,el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('section-'+name).classList.add('active');
+  if(name==='pool') loadPool();
+}
+
+function toast(msg, isError=false, type='') {
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='show'+(isError?' error':type==='success'?' success':'');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.className='',5000);
+}
+
+// ── INIT ──
+window.addEventListener('load',async()=>{
+  loadHalving();
+  if (hasWallet()) {
+    try {
+      const accs=await window.ethereum.request({method:'eth_accounts'});
+      if(accs.length) {
+        account=accs[0];
+        const btn=document.getElementById('connectBtn');
+        btn.textContent=account.slice(0,6)+'...'+account.slice(-4);
+        btn.classList.add('connected');
+        loadAll();
+        setInterval(()=>{if(account){loadStats();loadHalving();}},60000);
+        window.ethereum.on('accountsChanged',()=>location.reload());
+        window.ethereum.on('chainChanged',()=>location.reload());
+      }
+    } catch(e){}
+  }
+});
+
+// Close modal on overlay click
+document.getElementById('walletModal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+</script>
+</body>
+</html>
